@@ -39,6 +39,23 @@ class UserService {
         }
     }
 
+    async isAuthenticated(token) {
+        try {
+            const response = this.verifyToken(token);
+            if(!response) {
+                throw {error: "Invalid takone"};
+            }
+            const user = this.userRepository.getById(response.id);
+            if(!user) {
+                throw {error: "no user is found with the corresponding token"};
+            }
+            return user.id;
+        } catch (error) {
+            console.log("Something went wrong in Sign-in process");
+            throw error;
+        }
+    }
+
     createToken(user) {
         try {
             const result = jwt.sign(user, JWT_KEY, {expiresIn: '1d'});
